@@ -42,23 +42,50 @@ namespace AzureServices
                 int itemProcessed = 0;
                 int percentaje = 0;
                 //Just skipping the CSV file header
+                Dictionary<string, int> headers = new Dictionary<string, int>();
+
+
+                if (workItems.Length > 0)
+                {
+                    string[] csvHeaders = workItems[0].Split(',');
+                    int position = 0;
+                    foreach (string header in csvHeaders)
+                    {
+
+                        if (ProcessDictionaries.ItemsFields.TryGetValue(header, out string value))
+                        {
+                            headers.Add(value, position);
+
+                        }
+                        position++;
+                    }
+                }
+
                 foreach (string? row in workItems.Skip(1))
                 {
-                    string[] columns = row.Split(',');
+                    // Lista de propiedades existentes en el csv
+                    Dictionary<string, string> values = new Dictionary<string, string>();
 
-                    string id = columns[0];
-                    string type = columns[1];
-                    string parentTitle = columns[2];
-                    string childTitle = columns[3];
-                    string assigned = columns[4];
-                    string state = columns[5];
-                    string stimated = columns[6];
-                    string remaining = columns[7];
-                    string completed = columns[8];
-                    string activity = columns[9];
-                    string iteration = columns[10];
+                    string[] columns = row.Split(',');
+                    string id = "";
+                    string type = "";
+                    foreach (KeyValuePair<string, int> item in headers)
+                    {
+                        values.Add(item.Key, columns[item.Value]);
+                        if (item.Key == "System.Id")
+                        {
+                            id = columns[item.Value];
+                        }
+                        if (item.Key == "System.WorkItemType")
+                        {
+                            type = columns[item.Value];
+                        }
+ 
+                    }
+
 
                     // Si el item tiene un id y es un User Story o un requerimiento  se considera como padre 
+
                     bool isParent = !string.IsNullOrWhiteSpace(id) && (type == "User Story" || type == "Requirement");
 
                     if (isParent)
@@ -72,11 +99,11 @@ namespace AzureServices
                     // Sólo se crean tareas con un padre
                     if (type == "Task" && !string.IsNullOrWhiteSpace(parentId))
                     {
-                        JsonPatchDocument document =  new JsonPatchDocument();
+                        JsonPatchDocument document = new JsonPatchDocument();
                         switch (_userConfiguration.ProjectProcess.Trim().ToUpper())
                         {
                             case "AGILE":
-                                document = CreateAgileTask(parentId, childTitle, assigned, state, stimated, remaining, completed, activity, iteration);
+                                document = CreateAgileTask(values,parentId);
                                 break;
                             case "SCRUM":
                                 // TODO verificar los nombres de propiedades que aplican en https://learn.microsoft.com/en-us/azure/devops/boards/work-items/guidance/work-item-field?view=azure-devops
@@ -90,7 +117,7 @@ namespace AzureServices
                         }
 
                         //Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem workItemTask = witClient.CreateWorkItemAsync(document, _userConfiguration.Project, type).Result; 
-                        
+
                         taskCreatedCount++;
                     }
                     //itemProcessed++;
@@ -111,27 +138,16 @@ namespace AzureServices
         /// Crea una tarea para un projecto Agile
         /// </summary>
         /// <param name="parentId"></param>
-        /// <param name="childTitle"></param>
-        /// <param name="assigned"></param>
-        /// <param name="state"></param>
-        /// <param name="stimated"></param>
-        /// <param name="remaining"></param>
-        /// <param name="completed"></param>
-        /// <param name="activity"></param>
-        /// <param name="iteration"></param>
+        /// <param name="Values">Valores obtenidos</param>
         /// <returns></returns>
-        private JsonPatchDocument CreateAgileTask(string parentId, string childTitle, string assigned, string state, string stimated, string remaining, string completed, string activity, string iteration)
+        private JsonPatchDocument CreateAgileTask(Dictionary<string, string> Values, string parentId)
         {
             JsonPatchDocument document = new JsonPatchDocument();
 
-            document.AddPatch("/fields/System.Title", childTitle);
-            document.AddPatch("/fields/System.AssignedTo", assigned);
-            document.AddPatch("/fields/System.State", state);
-            document.AddPatch("/fields/Microsoft.VSTS.Scheduling.OriginalEstimate", stimated);
-            document.AddPatch("/fields/Microsoft.VSTS.Scheduling.RemainingWork", remaining);
-            document.AddPatch("/fields/Microsoft.VSTS.Scheduling.CompletedWork", completed);
-            document.AddPatch("/fields/Microsoft.VSTS.Common.Activity", activity);
-            document.AddPatch("/fields/System.IterationPath", iteration);
+            foreach (KeyValuePair<string, string> keyValuePair in Values)
+            {
+                document.AddPatch($"/fields/{keyValuePair.Key}", keyValuePair.Value);
+            }
 
             document.AddPatch("/relations/-",
                     new
