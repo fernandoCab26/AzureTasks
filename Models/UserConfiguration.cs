@@ -13,5 +13,6 @@
         /// De esto dependerá de los campos de las tareas
         /// </summary>
         public string ProjectProcess { get; set; }
+        public List<TeamMember> Team { get; set; }
     }
 }

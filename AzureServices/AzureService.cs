@@ -1,4 +1,5 @@
 ﻿using Microsoft.TeamFoundation.WorkItemTracking.WebApi;
+using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
 using Microsoft.VisualStudio.Services.WebApi.Patch.Json;
@@ -80,7 +81,7 @@ namespace AzureServices
                         {
                             type = columns[item.Value];
                         }
- 
+
                     }
 
 
@@ -103,7 +104,7 @@ namespace AzureServices
                         switch (_userConfiguration.ProjectProcess.Trim().ToUpper())
                         {
                             case "AGILE":
-                                document = CreateAgileTask(values,parentId);
+                                document = CreateAgileTask(values, parentId);
                                 break;
                             case "SCRUM":
                                 // TODO verificar los nombres de propiedades que aplican en https://learn.microsoft.com/en-us/azure/devops/boards/work-items/guidance/work-item-field?view=azure-devops
@@ -134,6 +135,19 @@ namespace AzureServices
             return message;
         }
 
+        public WorkItem GetWorkItem(string id)
+        {
+            var creds = new VssBasicCredential(string.Empty, _userConfiguration.Pat);
+            // Connect to Azure DevOps Services
+            var connection = new VssConnection(new Uri(_azureDevOpsOrganizationUrl), creds);
+            // Create instance of WorkItemTrackingHttpClient using VssConnection
+            WorkItemTrackingHttpClient witClient = connection.GetClient<WorkItemTrackingHttpClient>();
+
+            WorkItem task = witClient.GetWorkItemAsync(_userConfiguration.Project, int.Parse(id)).Result;
+
+            return task;
+        }
+
         /// <summary>
         /// Crea una tarea para un projecto Agile
         /// </summary>
@@ -154,6 +168,49 @@ namespace AzureServices
                     {
                         rel = "System.LinkTypes.Hierarchy-Reverse",
                         url = $"{_azureDevOpsOrganizationUrl}{_userConfiguration.Project}/_workitems/{parentId}",
+                        attributes = new { name = "Parent" }
+                    });
+            return document;
+        }
+
+        public void ImportWorkItems(List<AzureTask> azureTasks, string area, string iterationPath)
+        {
+            var creds = new VssBasicCredential(string.Empty, _userConfiguration.Pat);
+            // Connect to Azure DevOps Services
+            var connection = new VssConnection(new Uri(_azureDevOpsOrganizationUrl), creds);
+            // Create instance of WorkItemTrackingHttpClient using VssConnection
+            WorkItemTrackingHttpClient witClient = connection.GetClient<WorkItemTrackingHttpClient>();
+
+            foreach (var task in azureTasks)
+            {
+                var document = CreateDevelopmentAgileTask(task, iterationPath, "Development");
+                WorkItem workItemTask = witClient.CreateWorkItemAsync(document, _userConfiguration.Project, "Task").Result;
+            }
+
+        }
+
+        /// <summary>
+        /// Crea una tarea para un projecto Agile
+        /// </summary>
+        /// <param name="Values">Valores obtenidos</param>
+        /// <returns></returns>
+        private JsonPatchDocument CreateDevelopmentAgileTask(AzureTask azureTask, string iterationPath, string activity)
+        {
+            JsonPatchDocument document = new JsonPatchDocument();
+
+            document.AddPatch($"/fields/System.Title", azureTask.Name);
+            document.AddPatch($"/fields/System.AssignedTo", azureTask.AssignedTo);
+            document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.OriginalEstimate", azureTask.OriginalStimated);
+            document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.RemainingWork", azureTask.OriginalStimated);
+            document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.CompletedWork", 0);
+            document.AddPatch($"/fields/Microsoft.VSTS.Common.Activity", activity);
+            document.AddPatch($"/fields/System.IterationPath", iterationPath);
+
+            document.AddPatch("/relations/-",
+                    new
+                    {
+                        rel = "System.LinkTypes.Hierarchy-Reverse",
+                        url = $"{_azureDevOpsOrganizationUrl}{_userConfiguration.Project}/_workitems/{azureTask.ParentId}",
                         attributes = new { name = "Parent" }
                     });
             return document;

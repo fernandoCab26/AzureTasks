@@ -1,0 +1,14 @@
+﻿{
+  "Pat": "hwfcd3s6cxwhqrifwdjf65ux7mxjxxx73qv5rdt4pflr3trmhcoa",
+  "Organization": "fernandocab0643",
+  "Project": "Prueba devops",
+  "ProjectProcess": "Agile",
+  "Team": [
+    {
+      "User": "Luis Fernando Cab Huchim <fernando.cab@grupoblueocean.com>"
+    },
+    {
+      "User": "Edgar Chan Hoil <edgar.chan@grupoblueocean.com>"
+    }
+  ]
+}

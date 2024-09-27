@@ -16,5 +16,12 @@
                 {"Iteration Path","System.IterationPath" }
             };
 
+        public static Dictionary<string, string> WorkItemTypes = new Dictionary<string, string>
+        {
+            {"User Story", "US" },
+            {"Requirement", "RQM" },
+            {"Bug", "BUG" }
+        };
+
     }
 }
