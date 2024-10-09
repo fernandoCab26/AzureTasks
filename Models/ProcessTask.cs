@@ -3,7 +3,7 @@
     public class ProcessTask
     {
         public bool IsSelected { get; set; } = true;
-        public int Index { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
     }
 }

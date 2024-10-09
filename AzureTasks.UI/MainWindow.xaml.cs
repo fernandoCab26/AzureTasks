@@ -34,9 +34,8 @@ namespace AzureTasks.UI
         public string Iteration { get => txtPath.Text; set => txtPath.Text = value; }
         public string ProjectProcess { get => txtProcess.Text; set => txtProcess.Text = value; }
         public string Size { get => "0"; set => throw new NotImplementedException(); }
-        public string DevepmentSize { get => txtDevelopTime.Text; set => txtDevelopTime.Text = value; }
-        public string TestingSize { get => txtTestingTime.Text; set => txtTestingTime.Text = value; }
-        public int ComponentsNumber { get => 0; set => throw new NotImplementedException(); }
+        public string DevepmentSize { get => (string)lblDevelopmentTime.Content; set => lblDevelopmentTime.Content = value; }
+        public string TestingSize { get => (string)lblTestingTime.Content; set => lblTestingTime.Content = value; }
         public string Organization { get => txtOrganization.Text; set => txtOrganization.Text = value; }
         public string Pat { get => txtPat.Text; set => txtPat.Text = value; }
         public string Project { get => txtProject.Text; set => txtProject.Text = value; }
@@ -44,21 +43,36 @@ namespace AzureTasks.UI
         public string Reviewer { get => (string)cmbReviewers.SelectedValue; }
         public string ItemName { get => txtName.Text; set => txtName.Text = value; }
 
+        public string TestingAssignedTo => (string)cmbDevTeamTest.SelectedValue;
+
+        public string TestingReviewer => (string)cmbReviewersTest.SelectedValue;
+
+        public string OthersTasksAssignedTo => (string)cmbDevTeamOthers.SelectedValue;
+
+        public string OtherTime { get => (string)lblOtherTime.Content; set => lblOtherTime.Content = value; }
+        public string TotalTime { get => (string)lblTotalTime.Content; set => lblTotalTime.Content = value; }
+
         public event EventHandler GenerateTaskEvent;
         public event EventHandler ImportTaskHandler;
         public event EventHandler ClearTasksHandler;
         public event EventHandler AddComponentHandler;
         public event EventHandler SearchItemHandler;
 
-        public void BindingProcessTasks(List<DevelopmentTask> processTasks)
+        public void BindingProcessTasks(List<DevelopmentTask> processTasks, List<NormalTask> testingTasks, List<NormalTask> otherTasks)
         {
             this.dgProcessTasks.ItemsSource = processTasks;
+            this.dgTestingTask.ItemsSource = testingTasks;
+            dgOtherTasks.ItemsSource = otherTasks;
         }
 
         public void BindingGeneratedTasks(List<AzureTask> azureTasks)
         {
             this.dgGeneratedTask.ItemsSource = null;
             this.dgGeneratedTask.ItemsSource = azureTasks;
+            dgTestingTaskGenerated.ItemsSource = null;
+            dgTestingTaskGenerated.ItemsSource = azureTasks;
+            dgOtherTasksGenerated.ItemsSource= null;
+            dgOtherTasksGenerated.ItemsSource = azureTasks;
         }
 
         private void btnGenerate_Click(object sender, RoutedEventArgs e)
@@ -106,6 +120,21 @@ namespace AzureTasks.UI
             cmbReviewers.DisplayMemberPath = "User";
             cmbReviewers.SelectedValuePath = "User";
             cmbReviewers.SelectedIndex = 0;
+
+            cmbDevTeamTest.ItemsSource = teamMembers;
+            cmbDevTeamTest.DisplayMemberPath = "User";
+            cmbDevTeamTest.SelectedValuePath = "User";
+            cmbDevTeamTest.SelectedIndex = 0;
+
+            cmbReviewersTest.ItemsSource = teamMembers;
+            cmbReviewersTest.DisplayMemberPath = "User";
+            cmbReviewersTest.SelectedValuePath = "User";
+            cmbReviewersTest.SelectedIndex = 0;
+
+            cmbDevTeamOthers.ItemsSource = teamMembers;
+            cmbDevTeamOthers.DisplayMemberPath = "User";
+            cmbDevTeamOthers.SelectedValuePath = "User";
+            cmbDevTeamOthers.SelectedIndex = 0;
         }
 
         public void BidingComponents(List<TaskComponent> components)

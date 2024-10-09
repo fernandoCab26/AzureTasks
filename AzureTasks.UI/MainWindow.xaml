@@ -5,9 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AzureTasks.UI"
         mc:Ignorable="d"
-        Title="CrearTareas" Height="549" Width="1084">
+        Title="Crear tareas" Height="549" Width="1127" SizeToContent="Width" WindowStartupLocation="CenterScreen" Icon="/cropped-favicon_MayanSOft-192x192.png">
     <Grid Margin="0,0,0,-6">
-        <Grid HorizontalAlignment="Center" Height="434" VerticalAlignment="Top" Width="1064" Margin="0,21,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid HorizontalAlignment="Left" Height="434" VerticalAlignment="Top" Width="1064" Margin="10,21,0,0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="aaaa"></ColumnDefinition>
             </Grid.ColumnDefinitions>
@@ -49,39 +53,54 @@
                     <Label x:Name="label15_Copy" Content="Project Process" HorizontalAlignment="Left" Grid.Row="4" VerticalAlignment="Top" Margin="41,19,0,0" Height="26" Width="90" Grid.RowSpan="2"/>
                     <TextBox x:Name="txtProcess" Grid.Column="1" HorizontalAlignment="Left" Margin="10,23,0,0" Grid.Row="4" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Height="18" Grid.RowSpan="2"/>
                 </Grid>
-                <Grid Grid.Column="1">
+                <Grid Grid.Column="1" Margin="33,-22,0,0" HorizontalAlignment="Left" Width="489">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="57*"/>
                         <RowDefinition Height="133*"/>
                         <RowDefinition Height="27*"/>
                     </Grid.RowDefinitions>
-                    <Grid Margin="20,10,0,0" Grid.RowSpan="1" Grid.Row="0" >
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="47*"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label x:Name="label14" Content="Tiempo desarrollo" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" Height="26" Width="106"/>
-                        <TextBox x:Name="txtDevelopTime" HorizontalAlignment="Left" Margin="126,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="70" Height="18"/>
-                        <TextBox x:Name="txtTestingTime" Grid.Column="1" HorizontalAlignment="Left" Margin="105,11,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="70" Height="18"/>
-                        <Label x:Name="label15_Copy2" Content="Tiempo testing" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" Height="26" Width="90" Grid.Column="1" Grid.RowSpan="2"/>
-
-                    </Grid>
                     <Button x:Name="btnGenerate" Content="Agregar tareas" HorizontalAlignment="Left" Margin="17,0,0,0" Grid.Row="2" VerticalAlignment="Center" Width="88"  Height="22" Click="btnGenerate_Click"/>
                     <Button x:Name="btnImport" Content="Importar en azure" HorizontalAlignment="Left" Margin="110,0,0,0" Grid.Row="2" VerticalAlignment="Center"  Width="112" Height="22" Click="btnImport_Click"/>
                     <Button x:Name="btnReset" Content="Limpiar" HorizontalAlignment="Left" Margin="227,0,0,0" Grid.Row="2" VerticalAlignment="Center" Width="88" Click="btnReset_Click" Height="20"/>
-                    <DataGrid x:Name="dgComponents" Grid.Row="1" AutoGenerateColumns="False" InitializingNewItem="dgComponents_InitializingNewItem">
+                    <DataGrid x:Name="dgComponents" Grid.Row="1" AutoGenerateColumns="False" InitializingNewItem="dgComponents_InitializingNewItem" Margin="0,21,0,0">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding Id}" Header="Componente" CanUserReorder="False" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding Size}" Header="Tiempo" MinWidth="100" Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                    <Label x:Name="lblDevelopmentTime" Content="Tiempo Dev: 0 hrs" HorizontalAlignment="Left" Margin="17,17,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblTestingTime" Content="Tiempo Test: 0 hrs" HorizontalAlignment="Left" Margin="17,45,0,0" VerticalAlignment="Top" Grid.RowSpan="2"/>
+                    <Label x:Name="lblOtherTime" Content="Tiempo Otras: 0 hrs" HorizontalAlignment="Left" Margin="166,17,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="lblTotalTime" Content="Tiempo total: 0 hrs" HorizontalAlignment="Left" Margin="166,45,0,0" VerticalAlignment="Top" Grid.RowSpan="2" FontSize="14" FontWeight="Bold"/>
                 </Grid>
             </Grid>
             <TabControl x:Name="tabControl" Grid.Row="1">
                 <TabItem Header="Tiempos dev">
+                    <Grid Background="White" Margin="10,0,-10,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="13*"/>
+                            <RowDefinition Height="50*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid x:Name="dgProcessTasks" Margin="0,39,0,0" Grid.RowSpan="2" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Binding="{Binding IsSelected}" Header="Selección"/>
+                                <DataGridTextColumn Binding="{Binding Id}" Header="Id"></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Name}" Header="Nombre" ></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Percentaje}" Header="Porcentaje" ></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid x:Name="dgGeneratedTask" Grid.Column="1" Margin="0,39,0,0" Grid.RowSpan="2" />
+                        <Label x:Name="label5" Content="Asignado a:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="cmbDevTeam" HorizontalAlignment="Left" Margin="84,10,0,0" VerticalAlignment="Top" Width="164"/>
+                        <Label x:Name="label5_Copy" Content="Revisor:" HorizontalAlignment="Left" Margin="281,0,0,0" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="cmbReviewers" HorizontalAlignment="Left" Margin="355,11,0,0" VerticalAlignment="Top" Width="164"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Tiempos testing">
                     <Grid Background="White">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="13*"/>
@@ -91,28 +110,51 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <DataGrid x:Name="dgProcessTasks" Margin="0,39,0,0" Grid.RowSpan="2"/>
-                        <DataGrid x:Name="dgGeneratedTask" Grid.Column="1" Margin="0,39,0,0" Grid.RowSpan="2" />
-                        <Label x:Name="label5" Content="Asignado a:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                        <ComboBox x:Name="cmbDevTeam" HorizontalAlignment="Left" Margin="84,10,0,0" VerticalAlignment="Top" Width="164"/>
-                        <Label x:Name="label5_Copy" Content="Revisor:" HorizontalAlignment="Left" Margin="281,0,0,0" VerticalAlignment="Center"/>
-                        <ComboBox x:Name="cmbReviewers" HorizontalAlignment="Left" Margin="355,11,0,0" VerticalAlignment="Top" Width="164"/>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Tiempos testing">
-                    <Grid Background="#FFE5E5E5">
+                        <DataGrid x:Name="dgTestingTask" Grid.Row="1" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Binding="{Binding IsSelected}" Header="Selección"/>
+                                <DataGridTextColumn Binding="{Binding Id}" Header="Id" ></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Name}" Header="Nombre" ></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding OriginalStimated}" Header="Tiempo estimado" ></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid x:Name="dgTestingTaskGenerated" Grid.Column="1" Grid.Row="1"/>
+                        <Label x:Name="label5_Copy1" Content="Asignado a:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="cmbDevTeamTest" HorizontalAlignment="Left" Margin="84,10,0,0" VerticalAlignment="Top" Width="164"/>
+                        <Label x:Name="label5_Copy2" Content="Revisor:" HorizontalAlignment="Left" Margin="281,0,0,0" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="cmbReviewersTest" HorizontalAlignment="Left" Margin="355,11,0,0" VerticalAlignment="Top" Width="164"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Otras tareas">
-                    <Grid Background="#FFE5E5E5"/>
+                    <Grid Background="White">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="13*"/>
+                            <RowDefinition Height="50*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid x:Name="dgOtherTasks" AutoGenerateColumns="False"  Grid.Row="1">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Binding="{Binding IsSelected}" Header="Selección"/>
+                                <DataGridTextColumn Binding="{Binding Id}" Header="Id" ></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding Name}" Header="Nombre" ></DataGridTextColumn>
+                                <DataGridTextColumn Binding="{Binding OriginalStimated}" Header="Tiempo estimado" ></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid x:Name="dgOtherTasksGenerated" Grid.Column="1" Grid.Row="1"/>
+                        <Label x:Name="label5_Copy3" Content="Asignado a:" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="cmbDevTeamOthers" HorizontalAlignment="Left" Margin="84,10,0,0" VerticalAlignment="Top" Width="164"/>
+                    </Grid>
                 </TabItem>
             </TabControl>
         </Grid>
         <Label x:Name="lblPat" Content="Token: " HorizontalAlignment="Left" Margin="46,455,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="txtPat" HorizontalAlignment="Left" Margin="92,459,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="242"/>
         <Label x:Name="lblPat_Copy" Content="Organization: " HorizontalAlignment="Left" Margin="362,455,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtOrganization" HorizontalAlignment="Left" Margin="445,459,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="142"/>
-        <Label x:Name="lblPat_Copy1" Content="Project: " HorizontalAlignment="Left" Margin="666,460,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtProject" HorizontalAlignment="Left" Margin="724,464,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="txtOrganization" HorizontalAlignment="Left" Margin="445,459,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="142" Grid.ColumnSpan="2"/>
+        <Label x:Name="lblPat_Copy1" Content="Project: " HorizontalAlignment="Left" Margin="218,460,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+        <TextBox x:Name="txtProject" HorizontalAlignment="Left" Margin="276,464,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Grid.Column="1"/>
     </Grid>
 </Window>

@@ -20,7 +20,8 @@
         {
             {"User Story", "US" },
             {"Requirement", "RQM" },
-            {"Bug", "BUG" }
+            {"Bug", "BUG" },
+            {"Feature", "FT" }
         };
 
     }

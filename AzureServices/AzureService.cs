@@ -183,8 +183,9 @@ namespace AzureServices
 
             foreach (var task in azureTasks)
             {
-                var document = CreateDevelopmentAgileTask(task, iterationPath, "Development");
+                var document = CreateDevelopmentAgileTask(task, iterationPath);
                 WorkItem workItemTask = witClient.CreateWorkItemAsync(document, _userConfiguration.Project, "Task").Result;
+                task.IsCreated =  workItemTask.Id.HasValue && workItemTask.Id.Value > 0;
             }
 
         }
@@ -194,7 +195,7 @@ namespace AzureServices
         /// </summary>
         /// <param name="Values">Valores obtenidos</param>
         /// <returns></returns>
-        private JsonPatchDocument CreateDevelopmentAgileTask(AzureTask azureTask, string iterationPath, string activity)
+        private JsonPatchDocument CreateDevelopmentAgileTask(AzureTask azureTask, string iterationPath)
         {
             JsonPatchDocument document = new JsonPatchDocument();
 
@@ -203,7 +204,7 @@ namespace AzureServices
             document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.OriginalEstimate", azureTask.OriginalStimated);
             document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.RemainingWork", azureTask.OriginalStimated);
             document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.CompletedWork", 0);
-            document.AddPatch($"/fields/Microsoft.VSTS.Common.Activity", activity);
+            document.AddPatch($"/fields/Microsoft.VSTS.Common.Activity", azureTask.Activity);
             document.AddPatch($"/fields/System.IterationPath", iterationPath);
 
             document.AddPatch("/relations/-",
