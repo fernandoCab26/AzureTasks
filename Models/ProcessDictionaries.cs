@@ -2,7 +2,7 @@
 {
     public static class ProcessDictionaries
     {
-        public static Dictionary<string, string> ItemsFields  = new Dictionary<string, string>
+        public static Dictionary<string, string> ItemsFields = new Dictionary<string, string>
             {
                 {"Title 2","System.Title" },
                 {"ID", "System.Id" },

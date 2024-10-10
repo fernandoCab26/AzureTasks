@@ -29,6 +29,6 @@
         /// <summary>
         /// Tareas adicionales 
         /// </summary>
-        public List<NormalTask> OtherTasks { get; set; } 
+        public List<NormalTask> OtherTasks { get; set; }
     }
 }

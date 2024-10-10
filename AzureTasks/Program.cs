@@ -37,7 +37,7 @@ class Program
             AzureService azureService = new AzureService(userConfiguration);
             string message = "";
             Console.WriteLine(message);
-           message =  azureService.ImportWorkItems(csvPath);
+            message = azureService.ImportWorkItems(csvPath);
 
             Console.WriteLine(message);
 

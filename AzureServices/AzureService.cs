@@ -197,7 +197,7 @@ namespace AzureServices
                         break;
                 }
                 WorkItem workItemTask = witClient.CreateWorkItemAsync(document, _userConfiguration.Project, "Task").Result;
-                task.IsCreated =  workItemTask.Id.HasValue && workItemTask.Id.Value > 0;
+                task.IsCreated = workItemTask.Id.HasValue && workItemTask.Id.Value > 0;
             }
 
         }

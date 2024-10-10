@@ -13,7 +13,7 @@ namespace AzureTasks.UI.Views
         public string DevepmentSize { get; set; }
         public string TestingSize { get; set; }
         public string OtherTime { get; set; }
-        public string TotalTime { get; set; } 
+        public string TotalTime { get; set; }
         public string Organization { get; set; }
         public string Pat { get; set; }
         public string Project { get; set; }
@@ -29,7 +29,7 @@ namespace AzureTasks.UI.Views
         public event EventHandler ClearTasksHandler;
         public event EventHandler AddComponentHandler;
         public event EventHandler SearchItemHandler;
-        
+
 
         public void BindingGeneratedTasks(List<AzureTask> azureTasks);
         public void BindingDevTeam(List<TeamMember> teamMembers);

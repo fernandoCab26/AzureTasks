@@ -2,7 +2,6 @@
 using AzureTasks.UI.Views;
 using Models;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace AzureTasks.UI
 {
@@ -71,7 +70,7 @@ namespace AzureTasks.UI
             this.dgGeneratedTask.ItemsSource = azureTasks;
             dgTestingTaskGenerated.ItemsSource = null;
             dgTestingTaskGenerated.ItemsSource = azureTasks;
-            dgOtherTasksGenerated.ItemsSource= null;
+            dgOtherTasksGenerated.ItemsSource = null;
             dgOtherTasksGenerated.ItemsSource = azureTasks;
         }
 
