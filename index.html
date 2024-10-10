@@ -1,11 +1,110 @@
 ﻿<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <title>Azure tasks</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nombre del Proyecto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        header {
+            background: #333;
+            color: #fff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #0779e4 3px solid;
+        }
+
+            header a {
+                color: #fff;
+                text-decoration: none;
+                text-transform: uppercase;
+                font-size: 16px;
+            }
+
+            header ul {
+                padding: 0;
+                list-style: none;
+            }
+
+                header ul li {
+                    display: inline;
+                    padding: 0 20px 0 20px;
+                }
+
+        footer {
+            background: #333;
+            color: #fff;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <div class="container">
+            <h1>Nombre del Proyecto</h1>
+        </div>
+    </header>
+    <div class="container">
+        <section>
+            <h2>Descripción</h2>
+            <p>Una breve descripción del proyecto.</p>
+        </section>
+        <section>
+            <h2>Instalación</h2>
+            <pre>
+            <code>
+# Clonar el repositorio
+git clone https://github.com/usuario/proyecto.git
 
+# Ir al directorio del proyecto
+cd proyecto
+
+# Instalar dependencias
+npm install
+                </code>
+            </pre>
+        </section>
+        <section>
+            <h2>Uso</h2>
+            <pre>
+            <code>
+# Ejemplo de uso
+import proyecto
+
+# Código de ejemplo
+proyecto.funcion()
+                </code>
+            </pre>
+        </section>
+        <section>
+            <h2>Contribuciones</h2>
+            <p>Cómo pueden otros contribuir al proyecto.</p>
+        </section>
+        <section>
+            <h2>Licencia</h2>
+            <p>Información de la licencia bajo la cual se distribuye el proyecto.</p>
+        </section>
+        <section>
+            <h2>Contacto</h2>
+            <p>Cómo pueden los interesados contactarte.</p>
+        </section>
+    </div>
+    <footer>
+        <p>Copyright &copy; 2023 Nombre del Proyecto</p>
+    </footer>
 </body>
 </html>
