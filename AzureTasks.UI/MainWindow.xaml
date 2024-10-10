@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AzureTasks.UI"
         mc:Ignorable="d"
-        Title="Crear tareas" Height="549" Width="1127" SizeToContent="Width" WindowStartupLocation="CenterScreen" Icon="/cropped-favicon_MayanSOft-192x192.png">
+        Title="Crear tareas v1.0" Height="549" Width="1127" SizeToContent="Width" WindowStartupLocation="CenterScreen" Icon="/cropped-favicon_MayanSOft-192x192.png" ResizeMode="NoResize">
     <Grid Margin="0,0,0,-6">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -51,7 +51,8 @@
                     <TextBox x:Name="txtPath" Grid.Column="1" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="226" Grid.Row="4" Height="18"/>
                     <Button x:Name="btbGetItem" Grid.Column="1" Content="Consultar" HorizontalAlignment="Left" Margin="171,3,0,0" VerticalAlignment="Top" Width="65" Height="23" Grid.RowSpan="2" Click="btbGetItem_Click"/>
                     <Label x:Name="label15_Copy" Content="Project Process" HorizontalAlignment="Left" Grid.Row="4" VerticalAlignment="Top" Margin="41,19,0,0" Height="26" Width="90" Grid.RowSpan="2"/>
-                    <TextBox x:Name="txtProcess" Grid.Column="1" HorizontalAlignment="Left" Margin="10,23,0,0" Grid.Row="4" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Height="18" Grid.RowSpan="2"/>
+                    <ComboBox x:Name="cmbProcess" Grid.Column="1" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="5" VerticalAlignment="Center" Width="120">
+                    </ComboBox>
                 </Grid>
                 <Grid Grid.Column="1" Margin="33,-22,0,0" HorizontalAlignment="Left" Width="489">
                     <Grid.RowDefinitions>
@@ -151,10 +152,10 @@
             </TabControl>
         </Grid>
         <Label x:Name="lblPat" Content="Token: " HorizontalAlignment="Left" Margin="46,455,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtPat" HorizontalAlignment="Left" Margin="92,459,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="242"/>
+        <TextBox x:Name="txtPat" HorizontalAlignment="Left" Margin="92,459,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="242" IsEnabled="False"/>
         <Label x:Name="lblPat_Copy" Content="Organization: " HorizontalAlignment="Left" Margin="362,455,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtOrganization" HorizontalAlignment="Left" Margin="445,459,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="142" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="txtOrganization" HorizontalAlignment="Left" Margin="445,459,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="142" Grid.ColumnSpan="2" IsEnabled="False"/>
         <Label x:Name="lblPat_Copy1" Content="Project: " HorizontalAlignment="Left" Margin="218,460,0,0" VerticalAlignment="Top" Grid.Column="1"/>
-        <TextBox x:Name="txtProject" HorizontalAlignment="Left" Margin="276,464,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Grid.Column="1"/>
+        <TextBox x:Name="txtProject" HorizontalAlignment="Left" Margin="276,464,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Grid.Column="1" IsEnabled="False"/>
     </Grid>
 </Window>

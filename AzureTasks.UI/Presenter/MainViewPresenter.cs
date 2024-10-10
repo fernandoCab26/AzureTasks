@@ -100,12 +100,25 @@ namespace AzureTasks.UI.Presenter
             developmentTasks = userConfiguration.DevTasks;
             testingTask = userConfiguration.TestingTasks;
             otherTasks = userConfiguration.OtherTasks;
-            _mainView.ProjectProcess = userConfiguration.ProjectProcess;
             _mainView.Pat = userConfiguration.Pat;
             _mainView.Project = userConfiguration.Project;
             _mainView.Organization = userConfiguration.Organization;
             _mainView.BindingDevTeam(userConfiguration.Team);
             _mainView.BindingProcessTasks(developmentTasks, testingTask, otherTasks);
+            List<string> proccess = new List<string>()
+            {
+                {
+                    "CMMI"
+                },
+                {
+                    "Agile"
+                },
+                {
+                    "SCRUM"
+                }
+            };
+
+            _mainView.BindingProcess(proccess, userConfiguration.ProjectProcess);
         }
 
         private void MainView_ClearTasksHandler(object? sender, EventArgs e)
@@ -138,33 +151,34 @@ namespace AzureTasks.UI.Presenter
             try
             {
                 azureTasks.Clear();
-                foreach (TaskComponent component in taskComponents)
+                foreach (TaskComponent component in taskComponents.Where(t => t.Size > 0))
                 {
-                    foreach (DevelopmentTask task in developmentTasks.Where(t => t.IsSelected && t.Percentaje > 0))
+                    foreach (DevelopmentTask task in developmentTasks?.Where(t => t.IsSelected && t.Percentaje > 0))
                     {
                         decimal developmentTime = component.Size;
                         decimal originalStimated = (developmentTime * (Convert.ToDecimal(task.Percentaje) / 100));
                         AzureTask azureTask = CreateTask(component, task, originalStimated, "Development");
                         azureTask.AssignedTo = task.Name.Contains("Peer Review") ? _mainView.Reviewer : _mainView.AssignedTo;
+
                         azureTasks.Add(azureTask);
                     }
 
                 }
                 decimal devTime = azureTasks.Where(a => a.Activity == "Development").Sum(t => t.OriginalStimated);
-                foreach (NormalTask task in testingTask.Where(t => t.IsSelected && t.OriginalStimated > 0))
+                foreach (NormalTask task in testingTask?.Where(t => t.IsSelected && t.OriginalStimated > 0))
                 {
                     TaskComponent component = taskComponents.FirstOrDefault();
-
-                    AzureTask azureTask = CreateTask(component, task, task.OriginalStimated, "Testing");
+                    string activity = userConfiguration.ProjectProcess == "Agile" ? "Testing" : "Test";
+                    AzureTask azureTask = CreateTask(component, task, task.OriginalStimated, activity);
                     azureTask.AssignedTo = task.Name.Contains("Peer Review") ? _mainView.TestingReviewer : _mainView.TestingAssignedTo;
                     azureTasks.Add(azureTask);
                 }
 
-                foreach (NormalTask task in otherTasks.Where(t => t.IsSelected && t.OriginalStimated > 0))
+                foreach (NormalTask task in otherTasks?.Where(t => t.IsSelected && t.OriginalStimated > 0))
                 {
                     TaskComponent? component = taskComponents.FirstOrDefault();
-
-                    AzureTask azureTask = CreateTask(component, task, task.OriginalStimated, "Development");
+                    string activity = userConfiguration.ProjectProcess == "CMMI" && task.Name.ToUpper().Contains("ANÁLISIS") ? "Analysis" : "Development";
+                    AzureTask azureTask = CreateTask(component, task, task.OriginalStimated, activity);
                     azureTask.AssignedTo = _mainView.OthersTasksAssignedTo;
                     azureTasks.Add(azureTask);
                 }
@@ -193,15 +207,20 @@ namespace AzureTasks.UI.Presenter
         private AzureTask CreateTask(TaskComponent component, ProcessTask task, decimal originalStimated, string activity)
         {
             string workItemType = ProcessDictionaries.WorkItemTypes[_mainView.ItemType];
-
+            string componentId = activity == "Development" && component != null ? $"{component.Id.ToString("00")}." : string.Empty;
             AzureTask azureTask = new()
             {
                 ParentId = Convert.ToInt32(_mainView.Id),
-                ComponentGroup = component.Id,
-                Name = string.Format(taskName, workItemType, _mainView.Id, $"{component.Id.ToString("00")}.{task.Id.ToString("00")}", task.Name),
+                ComponentGroup = component != null ? component.Id : 0,
+                Name = string.Format(taskName, workItemType, _mainView.Id, $"{componentId}{task.Id.ToString("00")}", task.Name),
                 OriginalStimated = originalStimated,
                 Activity = activity
             };
+            if (userConfiguration.ProjectProcess == "CMMI")
+            {
+                azureTask.TaskType = "Planned";
+                azureTask.Activity = task.Name.ToUpper().Contains("ELABORACIÓN DE CÓDIGO") ? "Development Coding" : activity;
+            }
             return azureTask;
         }
     }

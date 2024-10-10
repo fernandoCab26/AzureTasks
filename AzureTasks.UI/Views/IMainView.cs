@@ -9,8 +9,7 @@ namespace AzureTasks.UI.Views
         public string ItemName { get; set; }
         public string Area { get; set; }
         public string Iteration { get; set; }
-        public string ProjectProcess { get; set; }
-        public string Size { get; set; }
+        public string ProjectProcess { get; }
         public string DevepmentSize { get; set; }
         public string TestingSize { get; set; }
         public string OtherTime { get; set; }
@@ -36,5 +35,6 @@ namespace AzureTasks.UI.Views
         public void BindingDevTeam(List<TeamMember> teamMembers);
         public void BidingComponents(List<TaskComponent> components);
         void BindingProcessTasks(List<DevelopmentTask> processTasks, List<NormalTask> testingTasks, List<NormalTask> otherTasks);
+        void BindingProcess(List<string> process, string selectedValue);
     }
 }

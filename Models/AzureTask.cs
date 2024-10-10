@@ -8,6 +8,10 @@
         public string Name { get; set; }
         public decimal OriginalStimated { get; set; }
         public string AssignedTo { get; set; }
+        /// <summary>
+        /// Activity o Discipline
+        /// </summary>
         public string Activity { get; set; }
+        public string TaskType { get; set; }
     }
 }

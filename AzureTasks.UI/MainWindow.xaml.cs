@@ -2,6 +2,7 @@
 using AzureTasks.UI.Views;
 using Models;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace AzureTasks.UI
 {
@@ -32,8 +33,7 @@ namespace AzureTasks.UI
         public string Id { get => txtId.Text; set => txtId.Text = value; }
         public string Area { get => txtArea.Text; set => txtArea.Text = value; }
         public string Iteration { get => txtPath.Text; set => txtPath.Text = value; }
-        public string ProjectProcess { get => txtProcess.Text; set => txtProcess.Text = value; }
-        public string Size { get => "0"; set => throw new NotImplementedException(); }
+        public string ProjectProcess { get => cmbProcess.SelectedValue.ToString(); }
         public string DevepmentSize { get => (string)lblDevelopmentTime.Content; set => lblDevelopmentTime.Content = value; }
         public string TestingSize { get => (string)lblTestingTime.Content; set => lblTestingTime.Content = value; }
         public string Organization { get => txtOrganization.Text; set => txtOrganization.Text = value; }
@@ -151,6 +151,12 @@ namespace AzureTasks.UI
         private void btbGetItem_Click(object sender, RoutedEventArgs e)
         {
             SearchItemHandler?.Invoke(this, e);
+        }
+
+        public void BindingProcess(List<string> process, string selectedValue)
+        {
+            cmbProcess.ItemsSource = process;
+            cmbProcess.SelectedValue = selectedValue;
         }
     }
 }

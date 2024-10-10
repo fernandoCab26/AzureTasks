@@ -183,7 +183,19 @@ namespace AzureServices
 
             foreach (var task in azureTasks)
             {
-                var document = CreateDevelopmentAgileTask(task, iterationPath);
+                JsonPatchDocument document; ;
+                switch (_userConfiguration.ProjectProcess)
+                {
+                    case "Agile":
+                        document = CreateDevelopmentAgileTask(task, iterationPath);
+                        break;
+                    case "CMMI":
+                        document = CreateDevelopmentCmmiTask(task, iterationPath);
+                        break;
+                    default:
+                        document = new JsonPatchDocument();
+                        break;
+                }
                 WorkItem workItemTask = witClient.CreateWorkItemAsync(document, _userConfiguration.Project, "Task").Result;
                 task.IsCreated =  workItemTask.Id.HasValue && workItemTask.Id.Value > 0;
             }
@@ -199,12 +211,33 @@ namespace AzureServices
         {
             JsonPatchDocument document = new JsonPatchDocument();
 
+            AddCommonFields(azureTask, iterationPath, document);
+            document.AddPatch($"/fields/Microsoft.VSTS.Common.Activity", azureTask.Activity);
+            return document;
+        }
+
+        /// <summary>
+        /// Crea una tarea para un projecto CMMI
+        /// </summary>
+        /// <param name="Values">Valores obtenidos</param>
+        /// <returns></returns>
+        private JsonPatchDocument CreateDevelopmentCmmiTask(AzureTask azureTask, string iterationPath)
+        {
+            JsonPatchDocument document = new JsonPatchDocument();
+
+            AddCommonFields(azureTask, iterationPath, document);
+            document.AddPatch($"/fields/Microsoft.VSTS.Common.Discipline", azureTask.Activity);
+            document.AddPatch($"/fields/Microsoft.VSTS.CMMI.TaskType", azureTask.TaskType);
+            return document;
+        }
+
+        private void AddCommonFields(AzureTask azureTask, string iterationPath, JsonPatchDocument document)
+        {
             document.AddPatch($"/fields/System.Title", azureTask.Name);
             document.AddPatch($"/fields/System.AssignedTo", azureTask.AssignedTo);
             document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.OriginalEstimate", azureTask.OriginalStimated);
             document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.RemainingWork", azureTask.OriginalStimated);
             document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.CompletedWork", 0);
-            document.AddPatch($"/fields/Microsoft.VSTS.Common.Activity", azureTask.Activity);
             document.AddPatch($"/fields/System.IterationPath", iterationPath);
 
             document.AddPatch("/relations/-",
@@ -214,7 +247,6 @@ namespace AzureServices
                         url = $"{_azureDevOpsOrganizationUrl}{_userConfiguration.Project}/_workitems/{azureTask.ParentId}",
                         attributes = new { name = "Parent" }
                     });
-            return document;
         }
     }
 }
