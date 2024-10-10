@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureServices", "AzureServi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{372E1E05-B5EF-46AC-8237-371524821460}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureTasks.UI", "AzureTasks.UI\AzureTasks.UI.csproj", "{60301E28-1818-4AE2-BF3A-00020D1DE76D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureTasks.UI", "AzureTasks.UI\AzureTasks.UI.csproj", "{60301E28-1818-4AE2-BF3A-00020D1DE76D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
