@@ -187,10 +187,10 @@ namespace AzureServices
                 switch (_userConfiguration.ProjectProcess)
                 {
                     case "Agile":
-                        document = CreateDevelopmentAgileTask(task, iterationPath);
+                        document = CreateDevelopmentAgileTask(task, area, iterationPath);
                         break;
                     case "CMMI":
-                        document = CreateDevelopmentCmmiTask(task, iterationPath);
+                        document = CreateDevelopmentCmmiTask(task, area, iterationPath);
                         break;
                     default:
                         document = new JsonPatchDocument();
@@ -207,11 +207,11 @@ namespace AzureServices
         /// </summary>
         /// <param name="Values">Valores obtenidos</param>
         /// <returns></returns>
-        private JsonPatchDocument CreateDevelopmentAgileTask(AzureTask azureTask, string iterationPath)
+        private JsonPatchDocument CreateDevelopmentAgileTask(AzureTask azureTask, string areaPath, string iterationPath)
         {
             JsonPatchDocument document = new JsonPatchDocument();
 
-            AddCommonFields(azureTask, iterationPath, document);
+            AddCommonFields(azureTask, areaPath, iterationPath, document);
             document.AddPatch($"/fields/Microsoft.VSTS.Common.Activity", azureTask.Activity);
             return document;
         }
@@ -221,23 +221,24 @@ namespace AzureServices
         /// </summary>
         /// <param name="Values">Valores obtenidos</param>
         /// <returns></returns>
-        private JsonPatchDocument CreateDevelopmentCmmiTask(AzureTask azureTask, string iterationPath)
+        private JsonPatchDocument CreateDevelopmentCmmiTask(AzureTask azureTask, string areaPath, string iterationPath)
         {
             JsonPatchDocument document = new JsonPatchDocument();
 
-            AddCommonFields(azureTask, iterationPath, document);
+            AddCommonFields(azureTask,areaPath, iterationPath, document);
             document.AddPatch($"/fields/Microsoft.VSTS.Common.Discipline", azureTask.Activity);
             document.AddPatch($"/fields/Microsoft.VSTS.CMMI.TaskType", azureTask.TaskType);
             return document;
         }
 
-        private void AddCommonFields(AzureTask azureTask, string iterationPath, JsonPatchDocument document)
+        private void AddCommonFields(AzureTask azureTask, string areaPath, string iterationPath, JsonPatchDocument document)
         {
             document.AddPatch($"/fields/System.Title", azureTask.Name);
             document.AddPatch($"/fields/System.AssignedTo", azureTask.AssignedTo);
             document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.OriginalEstimate", azureTask.OriginalStimated);
             document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.RemainingWork", azureTask.OriginalStimated);
             document.AddPatch($"/fields/Microsoft.VSTS.Scheduling.CompletedWork", 0);
+            document.AddPatch($"/fields/System.AreaPath", areaPath);
             document.AddPatch($"/fields/System.IterationPath", iterationPath);
 
             document.AddPatch("/relations/-",
