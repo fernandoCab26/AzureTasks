@@ -1,9 +1,11 @@
-﻿using AzureTasks.UI.Presenter;
-using AzureTasks.UI.Views;
-using Mayansoft.AzureConnect.Models;
+﻿using Mayansoft.AzureConnect.Models;
+using Mayansoft.AzureConnect.UI.Presenter;
+using Mayansoft.AzureConnect.UI.Views;
+using System;
+using System.Collections.Generic;
 using System.Windows;
 
-namespace AzureTasks.UI
+namespace Mayansoft.AzureConnect.UI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -19,7 +21,7 @@ namespace AzureTasks.UI
             _presenter.ShowMessageHandler += ShowMessageHandler;
         }
 
-        private void ShowMessageHandler(object? sender, string e)
+        private void ShowMessageHandler(object sender, string e)
         {
             MessageBox.Show(e);
         }

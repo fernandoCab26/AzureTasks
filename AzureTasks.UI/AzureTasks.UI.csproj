@@ -21,8 +21,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AzureServices\AzureServices.csproj" />
-    <ProjectReference Include="..\Models\Models.csproj" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.66.2" />
+    <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
+    <PackageReference Include="System.Formats.Asn1" Version="9.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mayansoft.AzureConnect.Models\Mayansoft.AzureConnect.Models.csproj" />
+    <ProjectReference Include="..\Mayansoft.AzureConnect.Services\Mayansoft.AzureConnect.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

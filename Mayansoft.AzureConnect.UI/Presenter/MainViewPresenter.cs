@@ -1,13 +1,16 @@
 ﻿using Mayansoft.AzureConnect.Services;
-using AzureTasks.UI.Views;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Microsoft.VisualStudio.Services.Common;
 using Mayansoft.AzureConnect.Models;
 using System.IO;
 using System.Text.Json;
 using System.Windows.Controls;
+using Mayansoft.AzureConnect.UI.Views;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace AzureTasks.UI.Presenter
+namespace Mayansoft.AzureConnect.UI.Presenter
 {
     public class MainViewPresenter
     {
@@ -25,6 +28,7 @@ namespace AzureTasks.UI.Presenter
         };
         List<AzureTask> azureTasks = new List<AzureTask>();
         private UserConfiguration userConfiguration;
+        private readonly AzureService _azureService;
 
         string taskName = "{0} {1}: Task {2} {3}";
         public MainViewPresenter(IMainView mainView)
@@ -41,14 +45,14 @@ namespace AzureTasks.UI.Presenter
             BindingConfigurations();
 
             _mainView.BidingComponents(taskComponents);
+            _azureService = new AzureService(userConfiguration);
         }
 
-        private void MainView_SearchItemHandler(object? sender, EventArgs e)
+        private void MainView_SearchItemHandler(object sender, EventArgs e)
         {
             try
             {
-                AzureService azureService = new AzureService(userConfiguration);
-                WorkItem workItem = azureService.GetWorkItem(_mainView.Id);
+                WorkItem workItem = _azureService.GetWorkItem(_mainView.Id);
                 workItem.Fields.TryGetValue("System.WorkItemType", out string type);
                 workItem.Fields.TryGetValue("System.Title", out string title);
                 workItem.Fields.TryGetValue("System.AreaPath", out string area);
@@ -61,7 +65,7 @@ namespace AzureTasks.UI.Presenter
             catch (Exception ex)
             {
 
-                ShowMessageEvent(ex.Message);
+                ShowMessageEvent($"{ex.Message} {ex.InnerException.Message}");
             }
         }
         public void ShowMessageEvent(string message)
@@ -69,7 +73,7 @@ namespace AzureTasks.UI.Presenter
             ShowMessageHandler?.Invoke(this, message);
         }
 
-        private void MainView_AddComponentHandler(object? sender, EventArgs e)
+        private void MainView_AddComponentHandler(object sender, EventArgs e)
         {
             InitializingNewItemEventArgs dataGridEvent = (InitializingNewItemEventArgs)e;
             var row = dataGridEvent.NewItem as TaskComponent;
@@ -121,7 +125,7 @@ namespace AzureTasks.UI.Presenter
             _mainView.BindingProcess(proccess, userConfiguration.ProjectProcess);
         }
 
-        private void MainView_ClearTasksHandler(object? sender, EventArgs e)
+        private void MainView_ClearTasksHandler(object sender, EventArgs e)
         {
             azureTasks.Clear();
             taskComponents.Clear();
@@ -130,23 +134,22 @@ namespace AzureTasks.UI.Presenter
             _mainView.BindingProcessTasks(developmentTasks, testingTask, otherTasks);
         }
 
-        private void MainView_ImportTaskHandlerAsync(object? sender, EventArgs e)
+        private void MainView_ImportTaskHandlerAsync(object sender, EventArgs e)
         {
             try
             {
-                AzureService azureService = new AzureService(userConfiguration);
-                azureService.ImportWorkItems(azureTasks.Where(t => !t.IsCreated).ToList(), _mainView.Area, _mainView.Iteration);
+                _azureService.ImportWorkItems(azureTasks.Where(t => !t.IsCreated).ToList(), _mainView.Area, _mainView.Iteration);
                 ShowMessageEvent("Las tareas se han importado correctamente");
                 _mainView.BindingGeneratedTasks(azureTasks);
             }
             catch (Exception ex)
             {
-                ShowMessageEvent(ex.Message);
+                ShowMessageEvent($"{ex.Message} {ex.InnerException.Message}");
             }
 
         }
 
-        private void MainView_GenerateTaskEvent(object? sender, EventArgs e)
+        private void MainView_GenerateTaskEvent(object sender, EventArgs e)
         {
             try
             {
@@ -156,7 +159,7 @@ namespace AzureTasks.UI.Presenter
                     foreach (DevelopmentTask task in developmentTasks?.Where(t => t.IsSelected && t.Percentaje > 0))
                     {
                         decimal developmentTime = component.Size;
-                        decimal originalStimated = (developmentTime * (Convert.ToDecimal(task.Percentaje) / 100));
+                        decimal originalStimated = developmentTime * (Convert.ToDecimal(task.Percentaje) / 100);
                         AzureTask azureTask = CreateTask(component, task, originalStimated, "Development");
                         azureTask.AssignedTo = task.Name.Contains("Peer Review") ? _mainView.Reviewer : _mainView.AssignedTo;
 
@@ -176,7 +179,7 @@ namespace AzureTasks.UI.Presenter
 
                 foreach (NormalTask task in otherTasks?.Where(t => t.IsSelected && t.OriginalStimated > 0))
                 {
-                    TaskComponent? component = taskComponents.FirstOrDefault();
+                    TaskComponent component = taskComponents.FirstOrDefault();
                     string activity = userConfiguration.ProjectProcess == "CMMI" && task.Name.ToUpper().Contains("ANÁLISIS") ? "Analysis" : "Development";
                     AzureTask azureTask = CreateTask(component, task, task.OriginalStimated, activity);
                     azureTask.AssignedTo = _mainView.OthersTasksAssignedTo;
@@ -199,7 +202,7 @@ namespace AzureTasks.UI.Presenter
             }
             catch (Exception ex)
             {
-                ShowMessageEvent(ex.Message);
+                ShowMessageEvent($"{ex.Message} {ex.InnerException.Message}");
             }
 
         }
@@ -208,7 +211,7 @@ namespace AzureTasks.UI.Presenter
         {
             string workItemType = ProcessDictionaries.WorkItemTypes[_mainView.ItemType];
             string componentId = activity == "Development" && component != null ? $"{component.Id.ToString("00")}." : string.Empty;
-            AzureTask azureTask = new()
+            AzureTask azureTask = new AzureTask()
             {
                 ParentId = Convert.ToInt32(_mainView.Id),
                 ComponentGroup = component != null ? component.Id : 0,
