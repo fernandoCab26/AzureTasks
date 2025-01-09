@@ -1,4 +1,4 @@
-﻿using Models;
+﻿using Mayansoft.AzureConnect.Models;
 
 namespace AzureTasks.UI.Views
 {

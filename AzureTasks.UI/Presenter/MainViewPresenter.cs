@@ -1,8 +1,8 @@
-﻿using AzureServices;
+﻿using Mayansoft.AzureConnect.Services;
 using AzureTasks.UI.Views;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Microsoft.VisualStudio.Services.Common;
-using Models;
+using Mayansoft.AzureConnect.Models;
 using System.IO;
 using System.Text.Json;
 using System.Windows.Controls;
@@ -90,8 +90,6 @@ namespace AzureTasks.UI.Presenter
                 string json = r.ReadToEnd();
                 userConfiguration = JsonSerializer.Deserialize<UserConfiguration>(json);
                 if (string.IsNullOrEmpty(userConfiguration.Pat) ||
-                    string.IsNullOrEmpty(userConfiguration.Project) ||
-                    string.IsNullOrEmpty(userConfiguration.Organization) ||
                     string.IsNullOrEmpty(userConfiguration.ProjectProcess))
                 {
                     throw new Exception($"El archivo configuration.json se encuentra incompleto");
@@ -101,8 +99,8 @@ namespace AzureTasks.UI.Presenter
             testingTask = userConfiguration.TestingTasks;
             otherTasks = userConfiguration.OtherTasks;
             _mainView.Pat = userConfiguration.Pat;
-            _mainView.Project = userConfiguration.Project;
-            _mainView.Organization = userConfiguration.Organization;
+            //_mainView.Project = userConfiguration.Project;
+            //_mainView.Organization = userConfiguration.Organization;
             _mainView.BindingDevTeam(userConfiguration.Team);
             _mainView.BindingProcessTasks(developmentTasks, testingTask, otherTasks);
             List<string> proccess = new List<string>()

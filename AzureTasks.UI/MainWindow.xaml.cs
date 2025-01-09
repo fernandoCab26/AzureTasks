@@ -1,6 +1,6 @@
 ﻿using AzureTasks.UI.Presenter;
 using AzureTasks.UI.Views;
-using Models;
+using Mayansoft.AzureConnect.Models;
 using System.Windows;
 
 namespace AzureTasks.UI

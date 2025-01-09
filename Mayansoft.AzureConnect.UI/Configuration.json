@@ -1,0 +1,104 @@
+﻿{
+  "Organizations": [
+    {
+      "Value": "bepensa-bebidas",
+      "Name": "bepensa-bebidas",
+      "IsDefault": true
+    },
+    {
+      "Value": "fernandocab0643",
+      "Name": "fernandocab0643",
+      "IsDefault": false
+    }
+  ],
+  "DevTasks": [
+    {
+      "Percentaje": 80,
+      "IsSelected": true,
+      "Id": 1,
+      "Name": "Elaboración de código"
+    },
+    {
+      "Percentaje": 5,
+      "IsSelected": true,
+      "Id": 3,
+      "Name": "Review"
+    },
+    {
+      "Percentaje": 5,
+      "IsSelected": true,
+      "Id": 4,
+      "Name": "Peer Review"
+    },
+    {
+      "Percentaje": 10,
+      "IsSelected": true,
+      "Id": 5,
+      "Name": "Pruebas funcionales  ISW"
+    }
+  ],
+  "TestingTasks": [
+    {
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 1,
+      "Name": "Diseño de pruebas"
+    },
+    {
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 2,
+      "Name": "Ejecución de pruebas"
+    },
+    {
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 3,
+      "Name": "Registro de defectos"
+    },
+    {
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 4,
+      "Name": "Peer Review de especificación"
+    },
+    {
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 4,
+      "Name": "Peer Review Test"
+    },
+    {
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 1,
+      "Name": "Especificación"
+    }
+  ],
+  "OtherTasks": [
+    {
+      "OriginalStimated": 0.0,
+      "IsSelected": false,
+      "Id": 0,
+      "Name": "Análisis"
+    },
+    {
+      "OriginalStimated": 0.0,
+      "IsSelected": false,
+      "Id": 7,
+      "Name": "Integración UAT"
+    },
+    {
+      "OriginalStimated": 0.0,
+      "IsSelected": false,
+      "Id": 8,
+      "Name": "Documentación"
+    },
+    {
+      "OriginalStimated": 0.0,
+      "IsSelected": false,
+      "Id": 9,
+      "Name": "Video capacitación"
+    }
+  ]
+}
