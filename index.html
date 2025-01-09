@@ -68,7 +68,8 @@
         <section id="instalacion">
             <h2>Instalación</h2>
             <pre># Descargar el instalador: <a href="https://github.com/fernandoCab26/AzureTasks/blob/master/Installer/Installer.zip">Installer.zip</a></pre>
-            <pre># Descomprimir y ejecutar el archivo AzureTasks.UI.exe</pre>
+            <pre># Descomprimir y ejecutar el archivo AzureTasksSetup.msi</pre>
+            <pre># Instalar en la ruta que se desee, por ejemplo: C:\Program Files\Mayansoft\Azure task creator\</pre>
 
             <pre>
 # Clonar el repositorio
@@ -80,17 +81,44 @@ git clone  https://github.com/fernandoCab26/AzureTasks.git
             <h2>Uso</h2>
             <pre>
             <code>
-# Ejemplo de uso
+ # Ejemplo de uso
+ Ingresar a la carpeta de instalacción, por ejemplo: C:\Program Files\Mayansoft\Azure task creator\
 
-Se debe generar un token en Azure Devops con permisos read,write y manage para Work Items
+ Ubicar el archivo Configuration.json y agregar las organizaciones en las que se requieran agregar tareas.
 
-En el archivo Configuration.json se deberá definir los valores de la organización , proyecto , equipo, token  y las tareas del proceso que aplican para el proyecto.
+ Si es necesario, modificar las tareas o agregar o eliminar las que se consideren necesarias para el equipo.
 
-#Importante
+                    </code>
+ #Importante
 
-Cada vez que se actualice el archivo configuration.json se debe reiniciar la aplicación.
-                </code>
+ Cada vez que se actualice el archivo configuration.json se debe reiniciar la aplicación.
             </pre>
+        </section>
+        <section id="notes">
+            <h2>Notas de versión</h2>
+            <section id="v2">
+                <h2>V 2.0.0</h2>
+                <pre>
+                <code>
+                        <!--# Ejemplo de uso-->
+Se migra a .Net Framework para hacer uso de la autenticación por medio de un popup. Por lo que el ya no será necesario indicar el PAT en el archivo de configuración.
+
+Se obtiene de manera dinámica la información de las organizaciones, por lo que se obtendrá automáticamente los proyectos asignados y el equipo de trabajo. Ya no será necesario indicarlo en el archivo de configuración.
+
+Se usan los colores de Mayansoft en los botones
+
+Se agrega un ProgressBar
+
+Se genera un instalador en lugar de descargar un .Zip
+                    </code>
+            </section>
+            <section id="v1">
+                <h2>V 1.0.0</h2>
+                <pre>
+                <code>
+Version inicial del proyecto
+                    </code>
+            </section>
         </section>
         <section id="contribuciones">
             <h2>Contribuciones</h2>
