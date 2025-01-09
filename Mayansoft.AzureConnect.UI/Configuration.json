@@ -1,15 +1,14 @@
 ﻿{
-  "Pat": "hwfcd3s6cxwhqrifwdjf65ux7mxjxxx73qv5rdt4pflr3trmhcoa",
-  "Organization": "fernandocab0643",
-  "Project": "OPE20",
-  "ProjectProcess": "CMMI",
-  "Team": [
+  "Organizations": [
     {
-      "User": "Luis Fernando Cab Huchim <fernando.cab@grupoblueocean.com>"
+      "Value": "bepensa-bebidas",
+      "Name": "bepensa-bebidas",
+      "IsDefault": true
     },
-    { "User": "Alam José Pérez Cih <alam.perez@grupoblueocean.com>" },
     {
-      "User": "Edgar Chan Hoil <edgar.chan@grupoblueocean.com>"
+      "Value": "fernandocab0643",
+      "Name": "fernandocab0643",
+      "IsDefault": false
     }
   ],
   "DevTasks": [

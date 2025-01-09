@@ -3,6 +3,7 @@ using Mayansoft.AzureConnect.UI.Presenter;
 using Mayansoft.AzureConnect.UI.Views;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 
 namespace Mayansoft.AzureConnect.UI
@@ -13,12 +14,21 @@ namespace Mayansoft.AzureConnect.UI
     public partial class MainWindow : Window, IMainView
     {
 
-        private MainViewPresenter _presenter;
+        private readonly MainViewPresenter _presenter;
+        private bool isFirsLoad = true;
+        private string _organizationPrev;
         public MainWindow()
         {
             InitializeComponent();
             _presenter = new MainViewPresenter(this);
             _presenter.ShowMessageHandler += ShowMessageHandler;
+            cmbOrganizations.DropDownOpened += CmbProjects_DropDownOpened;
+            IsLoading = true;
+        }
+
+        private void CmbProjects_DropDownOpened(object sender, EventArgs e)
+        {
+            _organizationPrev = cmbOrganizations.SelectedValue.ToString();
         }
 
         private void ShowMessageHandler(object sender, string e)
@@ -34,12 +44,24 @@ namespace Mayansoft.AzureConnect.UI
         public string Id { get => txtId.Text; set => txtId.Text = value; }
         public string Area { get => txtArea.Text; set => txtArea.Text = value; }
         public string Iteration { get => txtPath.Text; set => txtPath.Text = value; }
-        public string ProjectProcess { get => cmbProcess.SelectedValue.ToString(); }
+        public string ProjectProcess { get => txtProcess.Text; set => txtProcess.Text = value; }
         public string DevepmentSize { get => (string)lblDevelopmentTime.Content; set => lblDevelopmentTime.Content = value; }
         public string TestingSize { get => (string)lblTestingTime.Content; set => lblTestingTime.Content = value; }
-        public string Organization { get => txtOrganization.Text; set => txtOrganization.Text = value; }
-        public string Pat { get => txtPat.Text; set => txtPat.Text = value; }
-        public string Project { get => txtProject.Text; set => txtProject.Text = value; }
+        public string Organization { get => cmbOrganizations.SelectedValue.ToString(); }
+        public string Project
+        {
+            get
+            {
+                if (cmbProjects.SelectedValue == null)
+                {
+                    return string.Empty;
+                }
+                else
+                {
+                    return (string)cmbProjects.SelectedValue;
+                }
+            }
+        }
         public string AssignedTo { get => (string)cmbDevTeam.SelectedValue; }
         public string Reviewer { get => (string)cmbReviewers.SelectedValue; }
         public string ItemName { get => txtName.Text; set => txtName.Text = value; }
@@ -52,12 +74,15 @@ namespace Mayansoft.AzureConnect.UI
 
         public string OtherTime { get => (string)lblOtherTime.Content; set => lblOtherTime.Content = value; }
         public string TotalTime { get => (string)lblTotalTime.Content; set => lblTotalTime.Content = value; }
-
+        public bool IsLoading { get => progressBar.Visibility == Visibility.Visible; set => progressBar.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
         public event EventHandler GenerateTaskEvent;
         public event EventHandler ImportTaskHandler;
         public event EventHandler ClearTasksHandler;
         public event EventHandler AddComponentHandler;
         public event EventHandler SearchItemHandler;
+        public event EventHandler OnchangeOrganization;
+        public event EventHandler OnchangeProject;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void BindingProcessTasks(List<DevelopmentTask> processTasks, List<NormalTask> testingTasks, List<NormalTask> otherTasks)
         {
@@ -74,40 +99,6 @@ namespace Mayansoft.AzureConnect.UI
             dgTestingTaskGenerated.ItemsSource = azureTasks;
             dgOtherTasksGenerated.ItemsSource = null;
             dgOtherTasksGenerated.ItemsSource = azureTasks;
-        }
-
-        private void btnGenerate_Click(object sender, RoutedEventArgs e)
-        {
-            GenerateTaskEvent?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void btnImport_Click(object sender, RoutedEventArgs e)
-        {
-            string messageBoxText = "¿Deseas relizar la importación a Azure DevOps?";
-            string caption = "Importar a Azure DevOps";
-            MessageBoxButton button = MessageBoxButton.YesNo;
-            MessageBoxImage icon = MessageBoxImage.Question;
-            MessageBoxResult result;
-            result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
-            if (result == MessageBoxResult.Yes)
-            {
-                ImportTaskHandler?.Invoke(this, EventArgs.Empty);
-            }
-
-        }
-
-        private void btnReset_Click(object sender, RoutedEventArgs e)
-        {
-            string messageBoxText = "¿Deseas limpiar las tareas?";
-            string caption = "Limpiar";
-            MessageBoxButton button = MessageBoxButton.YesNo;
-            MessageBoxImage icon = MessageBoxImage.Question;
-            MessageBoxResult result;
-            result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
-            if (result == MessageBoxResult.Yes)
-            {
-                ClearTasksHandler?.Invoke(this, EventArgs.Empty);
-            }
         }
 
         public void BindingDevTeam(List<TeamMember> teamMembers)
@@ -153,11 +144,89 @@ namespace Mayansoft.AzureConnect.UI
         {
             SearchItemHandler?.Invoke(this, e);
         }
-
-        public void BindingProcess(List<string> process, string selectedValue)
+        protected void OnPropertyChanged(string propertyName)
         {
-            cmbProcess.ItemsSource = process;
-            cmbProcess.SelectedValue = selectedValue;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        public void BindingProjects(List<ListItem<string>> projects, string selectedValue)
+        {
+            cmbProjects.ItemsSource = projects;
+            cmbProjects.DisplayMemberPath = "Name";
+            cmbProjects.SelectedValuePath = "Value";
+            cmbProjects.SelectedValue = selectedValue;
+        }
+
+        public void BindingOrganization(List<Organization> organizations, string selectedValue)
+        {
+            cmbOrganizations.ItemsSource = organizations;
+            cmbOrganizations.DisplayMemberPath = "Name";
+            cmbOrganizations.SelectedValuePath = "Value";
+            cmbOrganizations.SelectedValue = selectedValue;
+        }
+
+        #region Events
+        private void btnGenerate_Click(object sender, RoutedEventArgs e)
+        {
+            GenerateTaskEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void btnImport_Click(object sender, RoutedEventArgs e)
+        {
+            string messageBoxText = "¿Deseas relizar la importación a Azure DevOps?";
+            string caption = "Importar a Azure DevOps";
+            MessageBoxButton button = MessageBoxButton.YesNo;
+            MessageBoxImage icon = MessageBoxImage.Question;
+            MessageBoxResult result;
+            result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+            if (result == MessageBoxResult.Yes)
+            {
+                ImportTaskHandler?.Invoke(this, EventArgs.Empty);
+            }
+
+        }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            string messageBoxText = "¿Deseas limpiar las tareas?";
+            string caption = "Limpiar";
+            MessageBoxButton button = MessageBoxButton.YesNo;
+            MessageBoxImage icon = MessageBoxImage.Question;
+            MessageBoxResult result;
+            result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+            if (result == MessageBoxResult.Yes)
+            {
+                ClearTasksHandler?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        private void cmbOrganizations_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (isFirsLoad || cmbOrganizations.SelectedValue?.ToString() == _organizationPrev)
+            {
+                isFirsLoad = false;
+                return;
+            }
+            string messageBoxText = "¿Deseas cambiar de organización?";
+            string caption = "La información capturada se perderá";
+            MessageBoxButton button = MessageBoxButton.YesNo;
+            MessageBoxImage icon = MessageBoxImage.Question;
+            MessageBoxResult result;
+            result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+            if (result == MessageBoxResult.Yes)
+            {
+                OnchangeOrganization?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                cmbOrganizations.SelectedValue = _organizationPrev;
+            }
+        }
+
+
+        #endregion
+
+        private void cmbProjects_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            OnchangeProject?.Invoke(this, EventArgs.Empty);
         }
     }
 }

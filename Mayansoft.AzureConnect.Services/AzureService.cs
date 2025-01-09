@@ -1,29 +1,34 @@
 ﻿using Mayansoft.AzureConnect.Models;
+using Microsoft.TeamFoundation.Core.WebApi;
+using Microsoft.TeamFoundation.WorkItemTracking.Process.WebApi;
+using Microsoft.TeamFoundation.WorkItemTracking.Process.WebApi.Models;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Microsoft.VisualStudio.Services.Client;
 using Microsoft.VisualStudio.Services.Common;
+using Microsoft.VisualStudio.Services.Organization.Client;
 using Microsoft.VisualStudio.Services.WebApi;
 using Microsoft.VisualStudio.Services.WebApi.Patch.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Mayansoft.AzureConnect.Services
 {
     public class AzureService
     {
-        private readonly UserConfiguration _userConfiguration;
         private readonly string _azureDevOpsOrganizationUrl = "https://dev.azure.com/{0}/";
 
-        private VssConnection _vssConnection; 
+        private VssConnection _vssConnection;
         public VssConnection Connection
         {
             get
             {
-                if(_vssConnection == null)
+                if (_vssConnection == null)
                 {// Connect to Azure DevOps Services
                     _vssConnection = new VssConnection(new Uri(_azureDevOpsOrganizationUrl), new VssClientCredentials());
                 }
@@ -33,136 +38,27 @@ namespace Mayansoft.AzureConnect.Services
 
         public AzureService(UserConfiguration userConfiguration)
         {
-            _userConfiguration = userConfiguration;
-            _azureDevOpsOrganizationUrl = string.Format(_azureDevOpsOrganizationUrl, userConfiguration.Organization);
+            string defaultOrganization = userConfiguration.Organizations.FirstOrDefault(o => o.IsDefault)?.Value;
+            _azureDevOpsOrganizationUrl = string.Format(_azureDevOpsOrganizationUrl, defaultOrganization);
+            var credentials = new VssClientCredentials();
             // Connect to Azure DevOps Services
-            _vssConnection = new VssConnection(new Uri(_azureDevOpsOrganizationUrl), new VssClientCredentials());
+            _vssConnection = new VssConnection(new Uri(_azureDevOpsOrganizationUrl), credentials);
         }
-
-        public string ImportWorkItems(string csvPath)
-        {
-            string[] workItems;
-            string message;
-            using (StreamReader r = new StreamReader(csvPath, Encoding.GetEncoding("iso-8859-1")))
-            {
-                workItems = r.ReadToEnd().Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            }
-
-            var creds = new VssBasicCredential(string.Empty, _userConfiguration.Pat);
-            // Connect to Azure DevOps Services
-            var connection = new VssConnection(new Uri(_azureDevOpsOrganizationUrl), creds);
-            // Create instance of WorkItemTrackingHttpClient using VssConnection
-            WorkItemTrackingHttpClient witClient = connection.GetClient<WorkItemTrackingHttpClient>();
-
-
-
-            try
-            {
-                string parentId = "";
-                int taskCreatedCount = 0;
-                int itemProcessed = 0;
-                int percentaje = 0;
-                //Just skipping the CSV file header
-                Dictionary<string, int> headers = new Dictionary<string, int>();
-
-
-                if (workItems.Length > 0)
-                {
-                    string[] csvHeaders = workItems[0].Split(',');
-                    int position = 0;
-                    foreach (string header in csvHeaders)
-                    {
-
-                        if (ProcessDictionaries.ItemsFields.TryGetValue(header, out string value))
-                        {
-                            headers.Add(value, position);
-
-                        }
-                        position++;
-                    }
-                }
-
-                foreach (string row in workItems.Skip(1))
-                {
-                    // Lista de propiedades existentes en el csv
-                    Dictionary<string, string> values = new Dictionary<string, string>();
-
-                    string[] columns = row.Split(',');
-                    string id = "";
-                    string type = "";
-                    foreach (KeyValuePair<string, int> item in headers)
-                    {
-                        values.Add(item.Key, columns[item.Value]);
-                        if (item.Key == "System.Id")
-                        {
-                            id = columns[item.Value];
-                        }
-                        if (item.Key == "System.WorkItemType")
-                        {
-                            type = columns[item.Value];
-                        }
-
-                    }
-
-
-                    // Si el item tiene un id y es un User Story o un requerimiento  se considera como padre 
-
-                    bool isParent = !string.IsNullOrWhiteSpace(id) && (type == "User Story" || type == "Requirement");
-
-                    if (isParent)
-                    {
-                        parentId = id;
-                    }
-                    else if (type == "User Story" || type == "Requirement")
-                    {
-                        parentId = "";
-                    }
-                    // Sólo se crean tareas con un padre
-                    if (type == "Task" && !string.IsNullOrWhiteSpace(parentId))
-                    {
-                        JsonPatchDocument document = new JsonPatchDocument();
-                        switch (_userConfiguration.ProjectProcess.Trim().ToUpper())
-                        {
-                            case "AGILE":
-                                document = CreateAgileTask(values, parentId);
-                                break;
-                            case "SCRUM":
-                                // TODO verificar los nombres de propiedades que aplican en https://learn.microsoft.com/en-us/azure/devops/boards/work-items/guidance/work-item-field?view=azure-devops
-                                break;
-                            case "CMMI":
-                                break;
-                            default:
-                                message = $"El tipo de proceso {_userConfiguration.ProjectProcess} no es soportado";
-                                return message;
-
-                        }
-
-                        //Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem workItemTask = witClient.CreateWorkItemAsync(document, _userConfiguration.Project, type).Result; 
-
-                        taskCreatedCount++;
-                    }
-                    //itemProcessed++;
-                    //percentaje = (itemProcessed * 100) / (workItems.Count() - 1);
-                    //Console.WriteLine($"{percentaje}% procesado");
-                }
-                message = $"{taskCreatedCount} Tareas creadas";
-            }
-            catch (Exception ex)
-            {
-                message = ex.Message;
-            }
-
-            return message;
-        }
-
-        public WorkItem GetWorkItem(string id)
+        public async Task<WorkItem> GetWorkItem(string id,string project)
         {
             // Create instance of WorkItemTrackingHttpClient using VssConnection
             WorkItemTrackingHttpClient witClient = Connection.GetClient<WorkItemTrackingHttpClient>();
 
-            WorkItem task = witClient.GetWorkItemAsync(_userConfiguration.Project, int.Parse(id)).Result;
+            WorkItem task = await witClient.GetWorkItemAsync(project, int.Parse(id),null,null,WorkItemExpand.All,null);
 
             return task;
+        }
+        public async Task<IEnumerable<WorkItem>> GetWorkItems(List<int> ids)
+        {
+            // Create instance of WorkItemTrackingHttpClient using VssConnection
+            WorkItemTrackingHttpClient witClient = Connection.GetClient<WorkItemTrackingHttpClient>();
+            var items = await witClient.GetWorkItemsAsync(ids);
+            return items;
         }
 
         /// <summary>
@@ -171,7 +67,7 @@ namespace Mayansoft.AzureConnect.Services
         /// <param name="parentId"></param>
         /// <param name="Values">Valores obtenidos</param>
         /// <returns></returns>
-        private JsonPatchDocument CreateAgileTask(Dictionary<string, string> Values, string parentId)
+        private JsonPatchDocument CreateAgileTask(Dictionary<string, string> Values, string project, string parentId)
         {
             JsonPatchDocument document = new JsonPatchDocument();
 
@@ -184,13 +80,13 @@ namespace Mayansoft.AzureConnect.Services
                     new
                     {
                         rel = "System.LinkTypes.Hierarchy-Reverse",
-                        url = $"{_azureDevOpsOrganizationUrl}{_userConfiguration.Project}/_workitems/{parentId}",
+                        url = $"{_azureDevOpsOrganizationUrl}{project}/_workitems/{parentId}",
                         attributes = new { name = "Parent" }
                     });
             return document;
         }
 
-        public void ImportWorkItems(List<AzureTask> azureTasks, string area, string iterationPath)
+        public async Task ImportWorkItems(List<AzureTask> azureTasks, string process,string project, string area, string iterationPath)
         {
             // Create instance of WorkItemTrackingHttpClient using VssConnection
             WorkItemTrackingHttpClient witClient = Connection.GetClient<WorkItemTrackingHttpClient>();
@@ -198,19 +94,19 @@ namespace Mayansoft.AzureConnect.Services
             foreach (var task in azureTasks)
             {
                 JsonPatchDocument document; ;
-                switch (_userConfiguration.ProjectProcess)
+                switch (process)
                 {
                     case "Agile":
-                        document = CreateDevelopmentAgileTask(task, iterationPath, area);
+                        document = CreateDevelopmentAgileTask(task,project, iterationPath, area);
                         break;
                     case "CMMI":
-                        document = CreateDevelopmentCmmiTask(task, iterationPath, area);
+                        document = CreateDevelopmentCmmiTask(task, project, iterationPath, area);
                         break;
                     default:
                         document = new JsonPatchDocument();
                         break;
                 }
-                WorkItem workItemTask = witClient.CreateWorkItemAsync(document, _userConfiguration.Project, "Task").Result;
+                WorkItem workItemTask = await witClient.CreateWorkItemAsync(document, project, "Task");
                 task.IsCreated = workItemTask.Id.HasValue && workItemTask.Id.Value > 0;
             }
 
@@ -221,11 +117,11 @@ namespace Mayansoft.AzureConnect.Services
         /// </summary>
         /// <param name="Values">Valores obtenidos</param>
         /// <returns></returns>
-        private JsonPatchDocument CreateDevelopmentAgileTask(AzureTask azureTask, string iterationPath, string areaPath)
+        private JsonPatchDocument CreateDevelopmentAgileTask(AzureTask azureTask, string project, string iterationPath, string areaPath)
         {
             JsonPatchDocument document = new JsonPatchDocument();
 
-            AddCommonFields(azureTask, iterationPath, document, areaPath);
+            AddCommonFields(azureTask,project, iterationPath, document, areaPath);
             document.AddPatch($"/fields/Microsoft.VSTS.Common.Activity", azureTask.Activity);
             return document;
         }
@@ -235,17 +131,17 @@ namespace Mayansoft.AzureConnect.Services
         /// </summary>
         /// <param name="Values">Valores obtenidos</param>
         /// <returns></returns>
-        private JsonPatchDocument CreateDevelopmentCmmiTask(AzureTask azureTask, string iterationPath, string areaPath)
+        private JsonPatchDocument CreateDevelopmentCmmiTask(AzureTask azureTask, string project, string iterationPath, string areaPath)
         {
             JsonPatchDocument document = new JsonPatchDocument();
 
-            AddCommonFields(azureTask, iterationPath, document, areaPath);
+            AddCommonFields(azureTask,project, iterationPath, document, areaPath);
             document.AddPatch($"/fields/Microsoft.VSTS.Common.Discipline", azureTask.Activity);
             document.AddPatch($"/fields/Microsoft.VSTS.CMMI.TaskType", azureTask.TaskType);
             return document;
         }
 
-        private void AddCommonFields(AzureTask azureTask, string iterationPath, JsonPatchDocument document, string areaPath)
+        private void AddCommonFields(AzureTask azureTask, string project, string iterationPath, JsonPatchDocument document, string areaPath)
         {
             document.AddPatch($"/fields/System.Title", azureTask.Name);
             document.AddPatch($"/fields/System.AssignedTo", azureTask.AssignedTo);
@@ -259,9 +155,46 @@ namespace Mayansoft.AzureConnect.Services
                     new
                     {
                         rel = "System.LinkTypes.Hierarchy-Reverse",
-                        url = $"{_azureDevOpsOrganizationUrl}{_userConfiguration.Project}/_workitems/{azureTask.ParentId}",
+                        url = $"{_azureDevOpsOrganizationUrl}{project}/_workitems/{azureTask.ParentId}",
                         attributes = new { name = "Parent" }
                     });
+        }
+
+        public async Task<IEnumerable<TeamProjectReference>> GetTeamProjectReferences()
+        {
+
+            ProjectHttpClient projectClient = Connection.GetClient<ProjectHttpClient>();
+
+            return  await projectClient.GetProjects();
+        }
+        public TeamProject GetProjectDetails(string projectName)
+        {
+            ProjectHttpClient projectClient = Connection.GetClient<ProjectHttpClient>();
+            return projectClient.GetProject(projectName, includeCapabilities:true).Result;
+        }
+        public IEnumerable<Process> GetProjectProcesses()
+        {
+            ProcessHttpClient processClient = Connection.GetClient<ProcessHttpClient>();
+            
+            return processClient.GetProcessesAsync().Result;
+        }
+
+        public async Task<ProcessInfo> GetProcessById(Guid processId)
+        {
+            WorkItemTrackingProcessHttpClient processClient = Connection.GetClient<WorkItemTrackingProcessHttpClient>();
+            return await processClient.GetProcessByItsIdAsync(processId);
+        }
+
+        public async Task<IEnumerable<WebApiTeam>> GetTeam(string projectId)
+        {
+            TeamHttpClient teamClient = Connection.GetClient<TeamHttpClient>();
+            return await teamClient.GetTeamsAsync(projectId);
+        }
+
+        public async Task<IEnumerable<IdentityRef>> GetTeamMembers(string projectId, string teamId)
+        {
+            TeamHttpClient identityClient = Connection.GetClient<TeamHttpClient>();
+            return await identityClient.GetTeamMembers(projectId,teamId);
         }
     }
 }
