@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "Mayansoft.AzureConnect.MCP.Server-Debug": {
+      "command": "D:\\BOT\\TT\\AzureTasks\\Mayansoft.AzureConnect.MCP.Server\\bin\\Debug\\net9.0\\win-x64\\Mayansoft.AzureConnect.MCP.Server.exe",
+      "args": [],
+      "options": {
+        "cwd": "D:\\BOT\\TT\\AzureTasks\\Mayansoft.AzureConnect.MCP.Server\\bin\\Debug\\net9.0\\win-x64\\"
+      }
+    }
+  }
+}

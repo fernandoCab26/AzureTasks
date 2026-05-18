@@ -13,24 +13,28 @@
   ],
   "DevTasks": [
     {
+      "key": "development_coding",
       "Percentaje": 80,
       "IsSelected": true,
       "Id": 1,
       "Name": "Elaboración de código"
     },
     {
+      "key": "review",
       "Percentaje": 5,
       "IsSelected": true,
       "Id": 3,
       "Name": "Review"
     },
     {
+      "key": "peer_review",
       "Percentaje": 5,
       "IsSelected": true,
       "Id": 4,
       "Name": "Peer Review"
     },
     {
+      "key": "functional_testing",
       "Percentaje": 10,
       "IsSelected": true,
       "Id": 5,
@@ -39,36 +43,42 @@
   ],
   "TestingTasks": [
     {
+      "key": "test_design",
       "OriginalStimated": 0.0,
       "IsSelected": true,
       "Id": 1,
       "Name": "Diseño de pruebas"
     },
     {
+      "key": "test_execution",
       "OriginalStimated": 0.0,
       "IsSelected": true,
       "Id": 2,
       "Name": "Ejecución de pruebas"
     },
     {
+      "key": "defect_registration",
       "OriginalStimated": 0.0,
       "IsSelected": true,
       "Id": 3,
       "Name": "Registro de defectos"
     },
     {
+      "key": "peer_review_specification",
       "OriginalStimated": 0.0,
       "IsSelected": true,
       "Id": 4,
       "Name": "Peer Review de especificación"
     },
     {
+      "key": "peer_review_test",
       "OriginalStimated": 0.0,
       "IsSelected": true,
       "Id": 4,
       "Name": "Peer Review Test"
     },
     {
+      "key": "specification",
       "OriginalStimated": 0.0,
       "IsSelected": true,
       "Id": 1,
@@ -77,24 +87,28 @@
   ],
   "OtherTasks": [
     {
+      "key": "analysis",
       "OriginalStimated": 0.0,
       "IsSelected": false,
       "Id": 0,
       "Name": "Análisis"
     },
     {
+      "key": "integration_uat",
       "OriginalStimated": 0.0,
       "IsSelected": false,
       "Id": 7,
       "Name": "Integración UAT"
     },
     {
+      "key": "documentation",
       "OriginalStimated": 0.0,
       "IsSelected": false,
       "Id": 8,
       "Name": "Documentación"
     },
     {
+      "key": "video_training",
       "OriginalStimated": 0.0,
       "IsSelected": false,
       "Id": 9,

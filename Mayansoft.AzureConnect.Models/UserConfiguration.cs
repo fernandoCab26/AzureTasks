@@ -5,6 +5,11 @@ namespace Mayansoft.AzureConnect.Models
     public class UserConfiguration
     {
         /// <summary>
+        /// PAT o VSCredentials
+        /// </summary>
+        public string ConnectionType { get; set; }
+        public string PAT { get; set; }
+        /// <summary>
         /// Listas de tareas de acuerdo al proceso.
         /// Agregar las útiles para el equipo
         /// </summary>

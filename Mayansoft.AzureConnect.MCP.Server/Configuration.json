@@ -1,0 +1,120 @@
+﻿{
+  "ConnectionType": "PAT",
+  "PAT": "",
+  "Organizations": [
+    {
+      "Value": "bepensa-bebidas",
+      "Name": "bepensa-bebidas",
+      "IsDefault": true
+    },
+    {
+      "Value": "fernandocab0643",
+      "Name": "fernandocab0643",
+      "IsDefault": false
+    }
+  ],
+  "DevTasks": [
+    {
+      "Key": "development_coding",
+      "Percentaje": 80,
+      "IsSelected": true,
+      "Id": 1,
+      "Name": "Elaboración de código"
+    },
+    {
+      "Key": "review",
+      "Percentaje": 5,
+      "IsSelected": true,
+      "Id": 3,
+      "Name": "Review"
+    },
+    {
+      "Key": "peer_review",
+      "Percentaje": 5,
+      "IsSelected": true,
+      "Id": 4,
+      "Name": "Peer Review"
+    },
+    {
+      "Key": "functional_testing",
+      "Percentaje": 10,
+      "IsSelected": true,
+      "Id": 5,
+      "Name": "Pruebas funcionales  ISW"
+    }
+  ],
+  "TestingTasks": [
+    {
+      "Key": "test_design",
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 1,
+      "Name": "Diseño de pruebas"
+    },
+    {
+      "Key": "test_execution",
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 2,
+      "Name": "Ejecución de pruebas"
+    },
+    {
+      "Key": "defect_registration",
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 3,
+      "Name": "Registro de defectos"
+    },
+    {
+      "Key": "peer_review_specification",
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 4,
+      "Name": "Peer Review de especificación"
+    },
+    {
+      "Key": "peer_review_test",
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 4,
+      "Name": "Peer Review Test"
+    },
+    {
+      "Key": "specification",
+      "OriginalStimated": 0.0,
+      "IsSelected": true,
+      "Id": 1,
+      "Name": "Especificación"
+    }
+  ],
+  "OtherTasks": [
+    {
+      "Key": "analysis",
+      "OriginalStimated": 0.0,
+      "IsSelected": false,
+      "Id": 0,
+      "Name": "Análisis"
+    },
+    {
+      "Key": "integration_uat",
+      "OriginalStimated": 0.0,
+      "IsSelected": false,
+      "Id": 7,
+      "Name": "Integración UAT"
+    },
+    {
+      "Key": "documentation",
+      "OriginalStimated": 0.0,
+      "IsSelected": false,
+      "Id": 8,
+      "Name": "Documentación"
+    },
+    {
+      "Key": "video_training",
+      "OriginalStimated": 0.0,
+      "IsSelected": false,
+      "Id": 9,
+      "Name": "Video capacitación"
+    }
+  ]
+}

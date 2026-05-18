@@ -40,9 +40,21 @@ namespace Mayansoft.AzureConnect.Services
         {
             string defaultOrganization = userConfiguration.Organizations.FirstOrDefault(o => o.IsDefault)?.Value;
             _azureDevOpsOrganizationUrl = string.Format(_azureDevOpsOrganizationUrl, defaultOrganization);
-            var credentials = new VssClientCredentials();
-            // Connect to Azure DevOps Services
-            _vssConnection = new VssConnection(new Uri(_azureDevOpsOrganizationUrl), credentials);
+
+            //Realizar la conexión utilizando el tipo de autenticación configurado
+            if (userConfiguration.ConnectionType == "PAT")
+            {
+                _vssConnection = new VssConnection(new Uri(_azureDevOpsOrganizationUrl), new VssBasicCredential(string.Empty, userConfiguration.PAT));
+   
+            }
+            else
+            {
+                _vssConnection = new VssConnection(new Uri(_azureDevOpsOrganizationUrl), new VssClientCredentials());
+            }
+            //var credentials = new VssClientCredentials();
+            
+            //// Connect to Azure DevOps Services
+            //_vssConnection = new VssConnection(new Uri(_azureDevOpsOrganizationUrl), credentials);
         }
         public async Task<WorkItem> GetWorkItem(string id,string project)
         {
